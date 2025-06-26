@@ -14,7 +14,7 @@ export interface PIIDetection {
   zipSource: string;
   context: string; // ±60 characters around detection
   position: number; // Character position in file
-  riskLevel: 'low' | 'medium' | 'high' | 'critical';
+  riskLevel: 'low' | 'medium' | 'high' | 'critical' | 'unknown';
   sensitivityScore?: number;
   aiConfidence?: number;
   reasoning?: string;

@@ -137,13 +137,10 @@ router.get('/api/v1/uploads/list', async (req, res) => {
 });
 
 // Processar arquivo selecionado
-router.post('/api/v1/uploads/process', async (req, res) => {
+router.post('/api/v1/uploads/process', async (req: Request, res: Response) => {
   const { filename, nomeProprio } = req.body;
   if (!filename) return res.status(400).json({ error: 'Arquivo não informado' });
-  // Aqui você pode chamar a função de processamento já existente, passando o nome do arquivo e o nome próprio
   try {
-    // Exemplo: await processarArquivo(uploadsDir + '/' + filename, nomeProprio);
-    // Simulação:
     setTimeout(() => {
       res.json({ success: true, message: `Processamento de ${filename} iniciado com nome próprio: ${nomeProprio}` });
     }, 1000);
