@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -25,8 +19,8 @@ model File {
   sessionId    String?
   totalFiles   Int?
   sourceId     Int?
-  source       Source?     @relation(fields: [sourceId], references: [id])
   detections   Detection[]
+  source       Source?     @relation(fields: [sourceId], references: [id])
 
   @@map("files")
 }
@@ -34,21 +28,21 @@ model File {
 model Detection {
   id               Int      @id @default(autoincrement())
   titular          String
-  documento        String   // 'Nome Completo', 'CPF', 'CNPJ', 'RG', 'CEP', 'Email', 'Telefone'
+  documento        String
   valor            String
   arquivo          String
   timestamp        DateTime @default(now())
   fileId           Int
-  file             File     @relation(fields: [fileId], references: [id], onDelete: Cascade)
-  context          String   @default("") // ±60 characters around detection
-  position         Int      @default(0) // Character position in file
-  riskLevel        String   @default("medium") // 'low', 'medium', 'high', 'critical'
+  context          String   @default("")
+  position         Int      @default(0)
+  riskLevel        String   @default("medium")
   sensitivityScore Int      @default(5)
   aiConfidence     Float    @default(0.5)
   reasoning        String?
   contextualRisk   String?
   isFalsePositive  Boolean  @default(false)
   recommendations  String[] @default([])
+  file             File     @relation(fields: [fileId], references: [id], onDelete: Cascade)
 
   @@map("detections")
 }
@@ -68,26 +62,26 @@ model Pattern {
 }
 
 model Source {
-  id                 Int      @id @default(autoincrement())
-  type               String // 'upload', 'watched_directory', 'manual'
-  name               String
-  path               String?
-  isActive           Boolean  @default(true)
-  cronPattern        String?
-  filePatterns       String[] @default([])
-  processSubdirs     Boolean  @default(true)
-  lastScan           DateTime?
-  totalFilesProcessed Int     @default(0)
-  totalDetections    Int      @default(0)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-  files              File[]
+  id                  Int       @id @default(autoincrement())
+  type                String
+  name                String
+  path                String?
+  isActive            Boolean   @default(true)
+  cronPattern         String?
+  filePatterns        String[]  @default([])
+  processSubdirs      Boolean   @default(true)
+  lastScan            DateTime?
+  totalFilesProcessed Int       @default(0)
+  totalDetections     Int       @default(0)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  files               File[]
 
   @@map("sources")
 }
 
 model Organization {
-  id        String    @id @default(uuid())
+  id        String     @id @default(uuid())
   name      String
   incidents Incident[]
 
@@ -95,41 +89,41 @@ model Organization {
 }
 
 model User {
-  id        String    @id @default(uuid())
+  id        String     @id @default(uuid())
   name      String
-  email     String    @unique
+  email     String     @unique
   incidents Incident[] @relation("Assignee")
 
   @@map("users")
 }
 
 model Incident {
-  id                String   @id @default(uuid())
-  organization      Organization @relation(fields: [organizationId], references: [id])
+  id                String       @id @default(uuid())
   organizationId    String
   date              DateTime
   type              String
   description       String
-  attachments       String[] @default([])
-  assignee          User?    @relation("Assignee", fields: [assigneeId], references: [id])
+  attachments       String[]     @default([])
   assigneeId        String?
   semanticContext   String?
-  lgpdArticles      String[] @default([])
-  dataCategories    String[] @default([])
+  lgpdArticles      String[]     @default([])
+  dataCategories    String[]     @default([])
   numSubjects       Int?
   riskLevel         String?
   immediateMeasures String?
   actionPlan        String?
-  isDraft           Boolean  @default(false)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  isDraft           Boolean      @default(false)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  assignee          User?        @relation("Assignee", fields: [assigneeId], references: [id])
+  organization      Organization @relation(fields: [organizationId], references: [id])
 
   @@map("incidents")
 }
 
 model TextEmbedding {
   id        Int      @id @default(autoincrement())
-  text      String   @db.Text
+  text      String
   vector    Float[]
   hash      String   @unique
   createdAt DateTime @default(now())
