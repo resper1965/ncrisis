@@ -84,8 +84,8 @@ router.get('/lgpd/titulares', async (req: Request, res: Response): Promise<void>
         { riskLevel: 'desc' },
         { timestamp: 'desc' }
       ],
-      take: format === 'csv' ? undefined : (Number(limit) || 50),
-      skip: format === 'csv' ? undefined : (Number(offset) || 0)
+      ...(format !== 'csv' && { take: Number(limit) || 50 }),
+      ...(format !== 'csv' && { skip: Number(offset) || 0 })
     });
 
     // Group by titular for response

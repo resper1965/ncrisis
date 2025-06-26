@@ -103,6 +103,10 @@ router.get('/incidents/:id', async (req: Request, res: Response): Promise<void> 
 
     res.status(200).json(incident);
   } catch (error) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
+      res.status(404).json({ error: 'Incident not found' });
+      return;
+    }
     logger.error('Error fetching incident:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
@@ -307,7 +311,7 @@ router.get('/organizations', async (req: Request, res: Response): Promise<void> 
     const { search } = req.query;
     
     const where = search 
-      ? { name: { contains: search as string, mode: 'insensitive' } }
+      ? { name: { contains: search as string, mode: 'insensitive' as const } }
       : {};
 
     const organizations = await prisma.organization.findMany({
@@ -368,8 +372,8 @@ router.get('/users', async (req: Request, res: Response): Promise<void> => {
     const where = search 
       ? { 
           OR: [
-            { name: { contains: search as string, mode: 'insensitive' } },
-            { email: { contains: search as string, mode: 'insensitive' } }
+            { name: { contains: search as string, mode: 'insensitive' as const } },
+            { email: { contains: search as string, mode: 'insensitive' as const } }
           ]
         }
       : {};

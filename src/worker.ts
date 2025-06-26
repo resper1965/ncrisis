@@ -23,6 +23,7 @@ interface FileProcessingJob {
 // File processing worker
 const fileWorker = new Worker('file-processing', async (job) => {
   const { filePath, originalName, sessionId } = job.data as FileProcessingJob;
+  const startTime = Date.now();
   
   console.log(`Processing file: ${originalName} (Session: ${sessionId})`);
   
@@ -52,21 +53,26 @@ const fileWorker = new Worker('file-processing', async (job) => {
     
     // Step 4: Process with AI
     console.log('Processing with AI...');
-    const processingResult = await processFileWithAI(
-      extractedFiles,
-      originalName,
-      { useAI: true, contextLength: 200 }
-    );
+    let allDetections: any[] = [];
+    
+    for (const file of extractedFiles) {
+      const processingResult = await processFileWithAI(
+        file.content,
+        file.filename,
+        originalName
+      );
+      allDetections.push(...processingResult.detections);
+    }
     
     // Step 5: Save detections
-    if (processingResult.detections.length > 0) {
+    if (allDetections.length > 0) {
       await piiRepository.createDetections(
-        processingResult.detections.map(d => ({
+        allDetections.map(d => ({
           titular: d.titular,
           documento: d.documento,
           valor: d.valor,
           arquivo: originalName,
-          timestamp: new Date(d.timestamp),
+          timestamp: d.timestamp,
           zipSource: originalName,
           context: d.context || '',
           position: typeof d.position === 'number' ? d.position : 0,
@@ -79,13 +85,13 @@ const fileWorker = new Worker('file-processing', async (job) => {
     // Step 6: Mark as processed
     await piiRepository.markFileAsProcessed(fileRecord.id);
     
-    console.log(`File processing completed: ${processingResult.detections.length} detections found`);
+    console.log(`File processing completed: ${allDetections.length} detections found`);
     
     return {
       success: true,
       fileId: fileRecord.id,
-      detections: processingResult.detections.length,
-      processingTime: processingResult.processingStats.aiProcessingTime + processingResult.processingStats.regexProcessingTime
+      detections: allDetections.length,
+      processingTime: Date.now() - startTime
     };
     
   } catch (error) {
