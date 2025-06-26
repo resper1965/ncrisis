@@ -1,0 +1,139 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model File {
+  id           Int         @id @default(autoincrement())
+  filename     String
+  originalName String?
+  zipSource    String?
+  mimeType     String?
+  size         Int?
+  uploadedAt   DateTime    @default(now())
+  processedAt  DateTime?
+  sessionId    String?
+  totalFiles   Int?
+  sourceId     Int?
+  source       Source?     @relation(fields: [sourceId], references: [id])
+  detections   Detection[]
+
+  @@map("files")
+}
+
+model Detection {
+  id               Int      @id @default(autoincrement())
+  titular          String
+  documento        String   // 'Nome Completo', 'CPF', 'CNPJ', 'RG', 'CEP', 'Email', 'Telefone'
+  valor            String
+  arquivo          String
+  timestamp        DateTime @default(now())
+  fileId           Int
+  file             File     @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  context          String   @default("") // ±60 characters around detection
+  position         Int      @default(0) // Character position in file
+  riskLevel        String   @default("medium") // 'low', 'medium', 'high', 'critical'
+  sensitivityScore Int      @default(5)
+  aiConfidence     Float    @default(0.5)
+  reasoning        String?
+  contextualRisk   String?
+  isFalsePositive  Boolean  @default(false)
+  recommendations  String[] @default([])
+
+  @@map("detections")
+}
+
+model Pattern {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  pattern     String
+  type        String
+  description String?
+  isActive    Boolean  @default(true)
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("patterns")
+}
+
+model Source {
+  id                 Int      @id @default(autoincrement())
+  type               String // 'upload', 'watched_directory', 'manual'
+  name               String
+  path               String?
+  isActive           Boolean  @default(true)
+  cronPattern        String?
+  filePatterns       String[] @default([])
+  processSubdirs     Boolean  @default(true)
+  lastScan           DateTime?
+  totalFilesProcessed Int     @default(0)
+  totalDetections    Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  files              File[]
+
+  @@map("sources")
+}
+
+model Organization {
+  id        String    @id @default(uuid())
+  name      String
+  incidents Incident[]
+
+  @@map("organizations")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  incidents Incident[] @relation("Assignee")
+
+  @@map("users")
+}
+
+model Incident {
+  id                String   @id @default(uuid())
+  organization      Organization @relation(fields: [organizationId], references: [id])
+  organizationId    String
+  date              DateTime
+  type              String
+  description       String
+  attachments       String[] @default([])
+  assignee          User?    @relation("Assignee", fields: [assigneeId], references: [id])
+  assigneeId        String?
+  semanticContext   String?
+  lgpdArticles      String[] @default([])
+  dataCategories    String[] @default([])
+  numSubjects       Int?
+  riskLevel         String?
+  immediateMeasures String?
+  actionPlan        String?
+  isDraft           Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("incidents")
+}
+
+model TextEmbedding {
+  id        Int      @id @default(autoincrement())
+  text      String   @db.Text
+  vector    Float[]
+  hash      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("text_embeddings")
+}

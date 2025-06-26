@@ -1,0 +1,49 @@
+modules = ["nodejs-20", "postgresql-16"]
+
+[nix]
+channel = "stable-24_05"
+packages = ["zip", "redis"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "N.Crisis Production"
+
+[[workflows.workflow]]
+name = "N.Crisis Production"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_ENV=production PORT=5000 ts-node src/server-clean.ts"
+waitForPort = 5000
+
+[deployment]
+run = ["sh", "-c", "npm install express cors helmet compression @types/express @types/cors @types/helmet @types/compression typescript ts-node @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint prettier eslint-config-prettier eslint-plugin-prettier"]
+
+[[ports]]
+localPort = 80
+externalPort = 3001
+
+[[ports]]
+localPort = 5000
+externalPort = 5000
+
+[[ports]]
+localPort = 5173
+externalPort = 5173
+
+[[ports]]
+localPort = 5174
+externalPort = 3000
+
+[[ports]]
+localPort = 8000
+externalPort = 80
