@@ -112,7 +112,6 @@ const fileWorker = new Worker('file-processing', async (job) => {
 // Helper function to extract ZIP files
 async function extractZipFiles(zipPath: string): Promise<Array<{ content: string; filename: string }>> {
   const yauzl = await import('yauzl');
-  const { promisify } = await import('util');
   
   return new Promise((resolve, reject) => {
     const files: Array<{ content: string; filename: string }> = [];

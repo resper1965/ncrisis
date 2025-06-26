@@ -52,7 +52,7 @@ export async function sendEmail(params: EmailTemplate): Promise<boolean> {
       to: params.to,
       from: params.from,
       subject: params.subject,
-      text: params.text,
+      text: params.text || '',
       ...(params.html && { html: params.html }),
       ...(params.templateId && { templateId: params.templateId }),
       ...(params.dynamicTemplateData && { dynamicTemplateData: params.dynamicTemplateData })
