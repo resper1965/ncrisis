@@ -3,6 +3,11 @@
  * Global configuration for test environment
  */
 
+import { execSync } from 'child_process';
+
+// Ensure Prisma Client is generated before tests
+execSync('npx prisma generate', { stdio: 'inherit' });
+
 import { PrismaClient } from '@prisma/client';
 
 // Setup test database

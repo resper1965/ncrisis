@@ -97,6 +97,12 @@ npm run lint         # Linting
 npm start           # Iniciar produção
 ```
 
+Antes de rodar os testes, garanta que o Prisma Client foi gerado:
+
+```bash
+npx prisma generate
+```
+
 
 ### Gerar Prisma Client offline
 
