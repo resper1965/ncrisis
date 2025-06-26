@@ -3,11 +3,10 @@
  * Main application class for the n.crisis PII detection platform
  */
 
-import * as express from 'express';
-import { Application, Request, Response, NextFunction } from 'express';
-import * as cors from 'cors';
-import * as helmet from 'helmet';
-import * as compression from 'compression';
+import express, { Application, Request, Response, NextFunction } from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import compression from 'compression';
 import { PrismaClient } from '@prisma/client';
 import * as fs from 'fs-extra';
 import * as path from 'path';
