@@ -97,6 +97,20 @@ npm run lint         # Linting
 npm start           # Iniciar produção
 ```
 
+
+### Gerar Prisma Client offline
+
+Caso sua rede bloqueie acessos a `binaries.prisma.sh`, baixe as engines do Prisma em outra máquina e copie para um diretório (ex.: `prisma-engines`). Defina `PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1` e exporte os caminhos das engines antes de gerar o client:
+
+```bash
+export PRISMA_QUERY_ENGINE_BINARY=./prisma-engines/query-engine
+export PRISMA_QUERY_ENGINE_LIBRARY=./prisma-engines/libquery_engine.so
+export PRISMA_SCHEMA_ENGINE_BINARY=./prisma-engines/schema-engine
+export PRISMA_FMT_BINARY=./prisma-engines/prisma-fmt
+export PRISMA_INTROSPECTION_ENGINE_BINARY=./prisma-engines/introspection-engine
+PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1 npx prisma generate
+```
+
 ## Deployment
 
 ### Opções de Deploy
