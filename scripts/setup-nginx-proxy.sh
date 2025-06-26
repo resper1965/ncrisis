@@ -148,7 +148,7 @@ fi
 
 # 6. Criar symlink
 log "Criando symlink para habilitar o site..."
-ln -sf "$SITE_CONFIG" "$NGINX_ENABLED/"
+ln -sf "$SITE_CONFIG" "$NGINX_ENABLED/ncrisis"
 
 # 7. Verificar configuração do Nginx
 log "Testando configuração do Nginx..."
