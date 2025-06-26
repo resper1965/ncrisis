@@ -7,6 +7,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { PIIDetection, DetectionSession } from './types/pii';
 import { detectPIIInText } from './services/processor';
+import { zipExtractor } from './utils/zipExtract';
 
 export type { PIIDetection, DetectionSession } from './types/pii';
 
@@ -14,6 +15,7 @@ export type { PIIDetection, DetectionSession } from './types/pii';
  * Process ZIP extraction and save detections
  */
 export async function processZipExtractionAndSave(
+  zipPath: string,
   originalName: string
 ): Promise<DetectionSession> {
   const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -21,7 +23,7 @@ export async function processZipExtractionAndSave(
 
   try {
     // Extract ZIP files
-    const extractedFiles = await extractZipFiles();
+    const extractedFiles = await extractZipFiles(zipPath);
     
     // Process each file for PII detection
     const allDetections: PIIDetection[] = [];
@@ -85,8 +87,10 @@ export async function saveDetectionSession(session: DetectionSession): Promise<v
 /**
  * Helper function to extract ZIP files
  */
-async function extractZipFiles(): Promise<Array<{ content: string; filename: string }>> {
-  // This would use the zipExtractor service
-  // For now, return empty array as placeholder
-  return [];
+async function extractZipFiles(zipPath: string): Promise<Array<{ content: string; filename: string }>> {
+  const session = await zipExtractor.extractToSession(zipPath);
+  return session.files.map(f => ({
+    content: f.content,
+    filename: path.basename(f.path)
+  }));
 }
