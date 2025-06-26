@@ -11,7 +11,6 @@ import { validateZipFile } from '../services/zipService';
 import { logger } from '../utils/logger';
 import { env } from '../config/env';
 import path from 'path';
-import fs from 'fs';
 
 const router = Router();
 
