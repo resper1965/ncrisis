@@ -81,34 +81,56 @@ if [ ! -d "node_modules" ]; then
     npm install
 fi
 
-# 7. Fazer build
-log "Fazendo build da aplicação..."
-npm run build
+# 7. Fazer build apenas do backend primeiro
+log "Fazendo build do backend..."
+echo "Compilando TypeScript..."
+npx tsc --noEmit 2>&1 || {
+    error "Erros de TypeScript encontrados:"
+    npx tsc --noEmit
+    exit 1
+}
+
+echo "Compilando TypeScript para JavaScript..."
+npx tsc 2>&1 || {
+    error "Falha na compilação TypeScript"
+    exit 1
+}
 
 # 8. Verificar se o build foi bem-sucedido
 if [ ! -f "build/src/server-clean.js" ]; then
     error "Build falhou - arquivo build/src/server-clean.js não foi criado"
+    log "Verificando arquivos em build/src/:"
+    ls -la build/src/ 2>/dev/null || echo "Diretório build/src/ não existe"
     exit 1
 fi
 
-# 9. Iniciar aplicação
+log "✅ Build do backend concluído com sucesso"
+
+# 9. Fazer build do frontend se necessário
+log "Fazendo build do frontend..."
+cd frontend
+npm install
+npm run build
+cd ..
+
+# 10. Iniciar aplicação
 log "Iniciando aplicação PM2..."
 pm2 start build/src/server-clean.js --name ncrisis-backend
 
-# 10. Verificar status
+# 11. Verificar status
 log "Verificando status da aplicação..."
 sleep 3
 pm2 status
 
-# 11. Verificar logs novamente
+# 12. Verificar logs novamente
 log "Verificando logs após reinicialização..."
 pm2 logs ncrisis-backend --lines 10
 
-# 12. Salvar configuração PM2
+# 13. Salvar configuração PM2
 log "Salvando configuração PM2..."
 pm2 save
 
-# 13. Verificar se está rodando na porta correta
+# 14. Verificar se está rodando na porta correta
 log "Verificando se está rodando na porta 3000..."
 if netstat -tlnp | grep ":3000 " > /dev/null; then
     log "✅ Aplicação está rodando na porta 3000"
@@ -116,7 +138,7 @@ else
     warn "❌ Aplicação não está rodando na porta 3000"
 fi
 
-# 14. Teste de conectividade
+# 15. Teste de conectividade
 log "Testando conectividade..."
 if curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 | grep -q "200\|404\|500"; then
     log "✅ Aplicação responde na porta 3000"
@@ -124,7 +146,7 @@ else
     warn "❌ Aplicação não responde na porta 3000"
 fi
 
-# 15. Informações finais
+# 16. Informações finais
 echo ""
 log "=== DIAGNÓSTICO CONCLUÍDO ==="
 info "Aplicação PM2 reiniciada"
@@ -132,7 +154,7 @@ info "Logs disponíveis: pm2 logs ncrisis-backend"
 info "Status: pm2 status"
 echo ""
 
-# 16. Comandos úteis
+# 17. Comandos úteis
 log "Comandos úteis:"
 echo "  Ver logs: pm2 logs ncrisis-backend"
 echo "  Ver status: pm2 status"
