@@ -137,7 +137,7 @@ router.get('/api/v1/uploads/list', async (req, res) => {
 });
 
 // Processar arquivo selecionado
-router.post('/api/v1/uploads/process', async (req: Request, res: Response) => {
+router.post('/api/v1/uploads/process', function(req, res) {
   const { filename, nomeProprio } = req.body;
   if (!filename) return res.status(400).json({ error: 'Arquivo não informado' });
   try {
