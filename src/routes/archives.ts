@@ -10,6 +10,8 @@ import { addArchiveJob } from '../services/queue';
 import { validateZipFile } from '../services/zipService';
 import { logger } from '../utils/logger';
 import { env } from '../config/env';
+import path from 'path';
+import fs from 'fs';
 
 const router = Router();
 
@@ -120,6 +122,34 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
       statusCode: 500,
       timestamp: new Date().toISOString(),
     });
+  }
+});
+
+// Listar arquivos ZIP disponíveis
+router.get('/api/v1/uploads/list', async (req, res) => {
+  try {
+    const uploadsDir = path.join(process.cwd(), 'uploads');
+    const files = await fs.promises.readdir(uploadsDir);
+    const zipFiles = files.filter(f => f.toLowerCase().endsWith('.zip'));
+    res.json({ files: zipFiles });
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao listar arquivos' });
+  }
+});
+
+// Processar arquivo selecionado
+router.post('/api/v1/uploads/process', async (req, res) => {
+  const { filename, nomeProprio } = req.body;
+  if (!filename) return res.status(400).json({ error: 'Arquivo não informado' });
+  // Aqui você pode chamar a função de processamento já existente, passando o nome do arquivo e o nome próprio
+  try {
+    // Exemplo: await processarArquivo(uploadsDir + '/' + filename, nomeProprio);
+    // Simulação:
+    setTimeout(() => {
+      res.json({ success: true, message: `Processamento de ${filename} iniciado com nome próprio: ${nomeProprio}` });
+    }, 1000);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao processar arquivo' });
   }
 });
 
