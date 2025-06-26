@@ -137,12 +137,18 @@ router.get('/api/v1/uploads/list', async (req, res) => {
 });
 
 // Processar arquivo selecionado
-router.post('/api/v1/uploads/process', (req: Request, res: Response) => {
+router.post('/api/v1/uploads/process', (req: Request, res: Response): void => {
   const { filename, nomeProprio } = req.body;
-  if (!filename) return res.status(400).json({ error: 'Arquivo não informado' });
+  if (!filename) {
+    res.status(400).json({ error: 'Arquivo não informado' });
+    return;
+  }
   try {
     setTimeout(() => {
-      res.json({ success: true, message: `Processamento de ${filename} iniciado com nome próprio: ${nomeProprio}` });
+      res.json({
+        success: true,
+        message: `Processamento de ${filename} iniciado com nome próprio: ${nomeProprio}`,
+      });
     }, 1000);
   } catch (err) {
     res.status(500).json({ error: 'Erro ao processar arquivo' });
