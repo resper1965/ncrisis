@@ -1,0 +1,136 @@
+version: '3.8'
+
+services:
+  # n.crisis Backend
+  ncrisis-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ncrisis-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - DATABASE_URL=postgresql://ncrisis_user:ncrisis123456@postgres:5432/ncrisis
+      - REDIS_URL=redis://redis:6379
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:5000,http://ncrisis-frontend:3000
+      - UPLOAD_DIR=./uploads
+      - TMP_DIR=./tmp
+      - MAX_FILE_SIZE=104857600
+      - HOST=0.0.0.0
+    volumes:
+      - ncrisis-uploads:/app/uploads
+      - ncrisis-logs:/app/logs
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - ncrisis-network
+
+  # n.crisis Frontend
+  ncrisis-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ncrisis-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - ncrisis-backend
+    networks:
+      - ncrisis-network
+
+  # n8n Workflow Automation
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_USER:-admin}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD:-admin123}
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - N8N_USER_MANAGEMENT_DISABLED=false
+      - N8N_DIAGNOSTICS_ENABLED=false
+      - N8N_LOG_LEVEL=info
+      - N8N_DATABASE_TYPE=postgresdb
+      - N8N_DATABASE_POSTGRESDB_HOST=postgres
+      - N8N_DATABASE_POSTGRESDB_PORT=5432
+      - N8N_DATABASE_POSTGRESDB_DATABASE=n8n
+      - N8N_DATABASE_POSTGRESDB_USER=n8n_user
+      - N8N_DATABASE_POSTGRESDB_PASSWORD=n8n123456
+      - N8N_REDIS_HOST=redis
+      - N8N_REDIS_PORT=6379
+    volumes:
+      - n8n-data:/home/node/.n8n
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - ncrisis-network
+
+  # PostgreSQL Database (Compartilhado)
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres-multi
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD=postgres123
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - ncrisis-network
+
+  # Redis Cache (Compartilhado)
+  redis:
+    image: redis:7-alpine
+    container_name: redis-multi
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - ncrisis-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - ncrisis-frontend
+      - n8n
+    networks:
+      - ncrisis-network
+
+volumes:
+  postgres-data:
+  redis-data:
+  n8n-data:
+  ncrisis-uploads:
+  ncrisis-logs:
+
+networks:
+  ncrisis-network:
+    driver: bridge 
