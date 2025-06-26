@@ -5,7 +5,7 @@
 
 import { PIIDetection, DetectionSession, EnhancedPIIDetection, ProcessingResult } from './types/pii';
 import { detectPIIInText } from './services/processor';
-import { batchValidateWithOpenAI, calculateFileRiskScore, AIValidationResult } from './ai/openaiValidator';
+import { batchValidateWithOpenAI, calculateFileRiskScore } from './ai/openaiValidator';
 
 /**
  * Process file content with enhanced AI validation
@@ -209,8 +209,10 @@ export async function createEnhancedDetectionSession(
     timestamp: new Date().toISOString(),
     zipFile,
     totalFiles: processingResults.length,
-    totalDetections: allDetections.length,
+    totalSize: allDetections.length * 100, // Estimate size
     detections: allDetections,
+    processingTime: 0,
+    createdAt: new Date(),
     aiEnhanced: true,
     riskSummary: {
       overallRisk,

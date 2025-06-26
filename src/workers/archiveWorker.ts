@@ -34,10 +34,10 @@ export const archiveWorker = new Worker<ArchiveJobData>(
           filename: originalName,
           originalName,
           zipSource: originalName,
-          mimeType,
-          size,
+          mimeType: mimeType || 'application/octet-stream',
+          size: size || 0,
           sessionId,
-          sourceId,
+          ...(sourceId && { sourceId }),
         },
       });
 
@@ -62,7 +62,7 @@ export const archiveWorker = new Worker<ArchiveJobData>(
           zipSource: originalName,
           sessionId,
           archiveJobId: job.id!,
-          sourceId,
+          ...(sourceId && { sourceId }),
         };
         
         fileJobs.push(addFileJob(fileJobData));

@@ -84,8 +84,8 @@ router.get('/lgpd/titulares', async (req: Request, res: Response): Promise<void>
         { riskLevel: 'desc' },
         { timestamp: 'desc' }
       ],
-      take: format === 'csv' ? undefined : Number(limit) || 0,
-      skip: format === 'csv' ? undefined : Number(offset) || 0
+      take: format === 'csv' ? undefined : (Number(limit) || 50),
+      skip: format === 'csv' ? undefined : (Number(offset) || 0)
     });
 
     // Group by titular for response
@@ -106,8 +106,8 @@ router.get('/lgpd/titulares', async (req: Request, res: Response): Promise<void>
       
       acc[titular].arquivos.push({
         nome: detection.arquivo,
-        zipSource: detection.file?.zipSource,
-        uploadedAt: detection.file?.uploadedAt,
+        zipSource: detection.file?.zipSource || 'unknown',
+        uploadedAt: detection.file?.uploadedAt || new Date(),
         riskLevel: detection.riskLevel,
         context: detection.context
       });
@@ -226,9 +226,9 @@ router.get('/lgpd/consolidado', async (req: Request, res: Response): Promise<voi
     const highRiskDetections = detections.filter(d => d.riskLevel === 'high' || d.riskLevel === 'critical').length;
     
     // LGPD compliance score calculation
-    const criticalPenalty = (riskDistribution.critical || 0) * 20;
-    const highPenalty = (riskDistribution.high || 0) * 10;
-    const mediumPenalty = (riskDistribution.medium || 0) * 5;
+    const criticalPenalty = (riskDistribution['critical'] || 0) * 20;
+    const highPenalty = (riskDistribution['high'] || 0) * 10;
+    const mediumPenalty = (riskDistribution['medium'] || 0) * 5;
     const complianceScore = Math.max(0, 100 - criticalPenalty - highPenalty - mediumPenalty);
 
     const report = {

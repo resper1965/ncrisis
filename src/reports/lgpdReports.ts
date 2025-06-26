@@ -89,10 +89,10 @@ class LGPDReportGenerator {
     const dataSubjects = this.identifyDataSubjects(detectionsData);
     
     // Generate compliance findings
-    const complianceFindings = this.generateComplianceFindings(detectionsData, summary);
+    const complianceFindings = this.generateComplianceFindings(summary);
     
     // Generate recommendations
-    const recommendations = this.generateRecommendations(summary, complianceFindings);
+    const recommendations = this.generateRecommendations(summary);
 
     const report: LGPDReport = {
       id: reportId,
@@ -131,7 +131,7 @@ class LGPDReportGenerator {
         month: monthStart.toISOString().substr(0, 7), // YYYY-MM format
         detectionsCount: summary.totalPIIDetections,
         riskScore: this.calculateAverageRiskScore(detectionsData),
-        newDataSubjects: this.countNewDataSubjects(detectionsData, monthStart),
+        newDataSubjects: this.countNewDataSubjects(detectionsData),
         complianceScore: summary.complianceScore
       });
     }
@@ -161,7 +161,7 @@ class LGPDReportGenerator {
     
     const detectionsData = await this.getDetectionsInPeriod(lastMonth, now);
     const summary = this.calculateSummaryMetrics(detectionsData);
-    const complianceFindings = this.generateComplianceFindings(detectionsData, summary);
+    const complianceFindings = this.generateComplianceFindings(summary);
 
     return {
       keyMetrics: {
@@ -174,7 +174,7 @@ class LGPDReportGenerator {
         .filter(f => f.severity === 'critical' || f.severity === 'high')
         .slice(0, 5)
         .map(f => f.finding),
-      actionItems: this.generateRecommendations(summary, complianceFindings)
+      actionItems: this.generateRecommendations(summary)
         .filter(r => r.priority === 'high')
         .slice(0, 3)
         .map(r => r.action),
@@ -326,7 +326,7 @@ class LGPDReportGenerator {
   /**
    * Generate compliance findings
    */
-  private generateComplianceFindings(detectionsData: any[], summary: any): LGPDReport['complianceFindings'] {
+  private generateComplianceFindings(summary: any): LGPDReport['complianceFindings'] {
     const findings: LGPDReport['complianceFindings'] = [];
 
     if (summary.criticalRiskDetections > 0) {
@@ -365,7 +365,7 @@ class LGPDReportGenerator {
   /**
    * Generate recommendations
    */
-  private generateRecommendations(summary: any, findings: any[]): LGPDReport['recommendations'] {
+  private generateRecommendations(summary: any): LGPDReport['recommendations'] {
     const recommendations: LGPDReport['recommendations'] = [];
 
     if (summary.criticalRiskDetections > 0) {
@@ -428,7 +428,7 @@ class LGPDReportGenerator {
   /**
    * Count new data subjects in period
    */
-  private countNewDataSubjects(detectionsData: any[], periodStart: Date): number {
+  private countNewDataSubjects(detectionsData: any[]): number {
     const uniqueSubjects = new Set(detectionsData.map(d => d.titular));
     return uniqueSubjects.size; // Simplified - in real implementation, would compare with historical data
   }

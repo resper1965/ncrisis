@@ -5,7 +5,6 @@
 
 import { Router, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import expressValidator from 'express-validator';
 import { body, validationResult } from 'express-validator';
 import { logger } from '../utils/logger';
 
@@ -260,7 +259,7 @@ router.put('/incidents/:id',
       logger.info(`Incident updated: ${incident.id}`);
       res.status(200).json(incident);
     } catch (error) {
-      if (error.code === 'P2025') {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
         res.status(404).json({ error: 'Incident not found' });
         return;
       }
@@ -290,7 +289,7 @@ router.delete('/incidents/:id', async (req: Request, res: Response): Promise<voi
     logger.info(`Incident deleted: ${id}`);
     res.status(204).send();
   } catch (error) {
-    if (error.code === 'P2025') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
       res.status(404).json({ error: 'Incident not found' });
       return;
     }
@@ -348,7 +347,7 @@ router.post('/organizations',
       logger.info(`Organization created: ${organization.name}`);
       res.status(201).json(organization);
     } catch (error) {
-      if (error.code === 'P2002') {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
         res.status(400).json({ error: 'Organization name already exists' });
         return;
       }
@@ -413,7 +412,7 @@ router.post('/users',
       logger.info(`User created: ${user.name} (${user.email})`);
       res.status(201).json(user);
     } catch (error) {
-      if (error.code === 'P2002') {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
         res.status(400).json({ error: 'Email already exists' });
         return;
       }
@@ -427,7 +426,7 @@ router.post('/users',
  * GET /api/v1/incidents/stats
  * Get incident statistics
  */
-router.get('/incidents/stats', async (req: Request, res: Response): Promise<void> => {
+router.get('/incidents/stats', async (_req: Request, res: Response): Promise<void> => {
   try {
     const [
       totalIncidents,

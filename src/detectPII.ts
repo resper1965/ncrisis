@@ -14,7 +14,6 @@ export type { PIIDetection, DetectionSession } from './types/pii';
  * Process ZIP extraction and save detections
  */
 export async function processZipExtractionAndSave(
-  zipPath: string,
   originalName: string
 ): Promise<DetectionSession> {
   const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;

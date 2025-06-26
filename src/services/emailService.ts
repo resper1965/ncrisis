@@ -50,12 +50,12 @@ export async function sendEmail(params: EmailTemplate): Promise<boolean> {
   try {
     await mailService.send({
       to: params.to,
-      from: params.from || process.env['FROM_EMAIL'] || 'noreply@e-ness.com.br',
+      from: params.from,
       subject: params.subject,
-      text: params.text || '',
-      html: params.html,
-      templateId: params.templateId,
-      dynamicTemplateData: params.dynamicTemplateData,
+      text: params.text,
+      ...(params.html && { html: params.html }),
+      ...(params.templateId && { templateId: params.templateId }),
+      ...(params.dynamicTemplateData && { dynamicTemplateData: params.dynamicTemplateData })
     });
     
     console.log(`Email sent successfully to: ${Array.isArray(params.to) ? params.to.join(', ') : params.to}`);

@@ -48,7 +48,6 @@ export async function triggerN8nIncident(fileId: string): Promise<N8nWebhookResp
       };
     }
 
-    const result = await response.json().catch(() => ({}));
     console.log(`[N8N Service] Webhook call successful for fileId: ${fileId}`);
     
     return { 

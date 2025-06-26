@@ -22,7 +22,7 @@ interface FileProcessingJob {
 
 // File processing worker
 const fileWorker = new Worker('file-processing', async (job) => {
-  const { filePath, originalName, sessionId, userId } = job.data as FileProcessingJob;
+  const { filePath, originalName, sessionId } = job.data as FileProcessingJob;
   
   console.log(`Processing file: ${originalName} (Session: ${sessionId})`);
   
@@ -65,8 +65,12 @@ const fileWorker = new Worker('file-processing', async (job) => {
           titular: d.titular,
           documento: d.documento,
           valor: d.valor,
-          arquivo: d.arquivo,
-          timestamp: new Date(d.timestamp)
+          arquivo: originalName,
+          timestamp: new Date(d.timestamp),
+          zipSource: originalName,
+          context: d.context || '',
+          position: typeof d.position === 'number' ? d.position : 0,
+          riskLevel: d.riskLevel || 'unknown'
         })),
         fileRecord.id
       );
@@ -85,7 +89,7 @@ const fileWorker = new Worker('file-processing', async (job) => {
     };
     
   } catch (error) {
-    console.error(`File processing failed: ${error.message}`);
+    console.error(`File processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     
     // Clean up file on error
     await fs.remove(filePath).catch(() => {});
@@ -95,8 +99,8 @@ const fileWorker = new Worker('file-processing', async (job) => {
 }, {
   connection: redis,
   concurrency: parseInt(process.env['WORKER_CONCURRENCY'] || '3'),
-  removeOnComplete: 50,
-  removeOnFail: 20
+  removeOnComplete: { count: 50 },
+  removeOnFail: { count: 20 }
 });
 
 // Helper function to extract ZIP files

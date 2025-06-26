@@ -106,8 +106,8 @@ class DirectoryMonitor {
       }
     });
 
-    watcher.on('error', (error: Error) => {
-      console.error(`❌ Watcher error for ${config.name}:`, error);
+    watcher.on('error', (error: unknown) => {
+      console.error('Directory watcher error:', error);
     });
 
     this.watchers.set(directoryId, watcher);
