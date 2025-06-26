@@ -7,7 +7,7 @@ import { Router, Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import { PrismaClient } from '@prisma/client';
 import OpenAI from 'openai';
-import crypto from 'crypto';
+import * as crypto from 'crypto';
 
 const router = Router();
 const prisma = new PrismaClient();
