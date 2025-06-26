@@ -37,7 +37,7 @@ const upload = multer({
  * POST /api/v1/archives/upload
  * Upload and queue ZIP file for processing
  */
-router.post('/upload', upload.single('file'), async (req, res): Promise<void> => {
+router.post('/upload', upload.single('file'), async (req: Request, res: Response): Promise<void> => {
   try {
     if (!req.file) {
       res.status(400).json({
