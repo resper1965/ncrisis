@@ -125,7 +125,7 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
 });
 
 // Listar arquivos ZIP disponíveis
-router.get('/api/v1/uploads/list', async (req, res) => {
+router.get('/uploads/list', async (req, res) => {
   try {
     const uploadsDir = path.join(process.cwd(), 'uploads');
     const files = await fs.promises.readdir(uploadsDir);
@@ -137,7 +137,7 @@ router.get('/api/v1/uploads/list', async (req, res) => {
 });
 
 // Processar arquivo selecionado
-router.post('/api/v1/uploads/process', (req: Request, res: Response): void => {
+router.post('/uploads/process', (req: Request, res: Response): void => {
   const { filename, nomeProprio } = req.body;
   if (!filename) {
     res.status(400).json({ error: 'Arquivo não informado' });
