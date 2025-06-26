@@ -113,7 +113,7 @@ verify_dns() {
     log "INFO" "Verificando resolução DNS para $DOMAIN..."
     
     local server_ip=$(curl -s ifconfig.me)
-    local domain_ip=$(dig +short "$DOMAIN" | tail -1)
+    local domain_ip=$(dig +short A "$DOMAIN" | tail -1)
     
     if [[ "$server_ip" != "$domain_ip" ]]; then
         log "WARN" "DNS pode não estar apontando corretamente:"
