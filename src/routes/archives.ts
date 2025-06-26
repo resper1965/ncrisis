@@ -3,7 +3,7 @@
  * POST /api/v1/archives/upload - Upload and process ZIP files
  */
 
-import express from 'express';
+import express, { Request, Response } from 'express';
 import multer from 'multer';
 import * as fs from 'fs-extra';
 import { addArchiveJob } from '../services/queue';
@@ -137,7 +137,7 @@ router.get('/api/v1/uploads/list', async (req, res) => {
 });
 
 // Processar arquivo selecionado
-router.post('/api/v1/uploads/process', (req, res) => {
+router.post('/api/v1/uploads/process', (req: Request, res: Response) => {
   const { filename, nomeProprio } = req.body;
   if (!filename) return res.status(400).json({ error: 'Arquivo não informado' });
   try {
