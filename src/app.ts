@@ -20,6 +20,10 @@ import n8nRouter from './routes/n8n';
 import embeddingsRouter from './routes/embeddings';
 import searchRouter from './routes/search';
 import chatRouter from './routes/chat';
+import archivesRouter from './routes/archives';
+import reportsRouter from './routes/reports';
+import incidentsRouter from './routes/incidents';
+import patternsRouter from './routes/patterns';
 import { getFaissManager } from './faissManager';
 
 export class NCrisisApp {
@@ -109,6 +113,10 @@ export class NCrisisApp {
     this.app.use('/api/v1/embeddings', embeddingsRouter);
     this.app.use('/api/v1/search', searchRouter);
     this.app.use('/api/v1/chat', chatRouter);
+    this.app.use('/api/v1/archives', archivesRouter);
+    this.app.use('/api/v1/reports', reportsRouter);
+    this.app.use('/api/v1/incidents', incidentsRouter);
+    this.app.use('/api/v1/patterns', patternsRouter);
 
     // Serve React frontend
     const frontendPath = path.join(__dirname, '../frontend/dist');
