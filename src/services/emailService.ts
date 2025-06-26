@@ -1,6 +1,6 @@
 /**
  * Email Service using SendGrid
- * Handles email notifications for N.Crisis system
+ * Handles email notifications for n.crisis system
  */
 
 import { MailService } from '@sendgrid/mail';
@@ -93,7 +93,7 @@ export async function sendNotificationEmail(
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N.Crisis Alert</title>
+    <title>n.crisis Alert</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; }
         .container { max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -145,7 +145,7 @@ export async function sendNotificationEmail(
         </div>
         
         <div class="footer">
-            <p>Este é um email automático do sistema N.Crisis.</p>
+            <p>Este é um email automático do sistema n.crisis.</p>
             <p>Domain: monster.e-ness.com.br</p>
         </div>
     </div>
@@ -153,7 +153,7 @@ export async function sendNotificationEmail(
 </html>`;
 
   const text = `
-N.Crisis System Alert
+n.crisis System Alert
 
 Tipo: ${data.alertType.toUpperCase()}
 Para: ${data.recipientName}
@@ -169,7 +169,7 @@ Enviado em: ${new Date().toLocaleString('pt-BR')}
 
   return await sendEmail({
     to,
-    subject: `N.Crisis Alert: ${data.alertType.toUpperCase()}`,
+    subject: `n.crisis Alert: ${data.alertType.toUpperCase()}`,
     html,
     text,
     from: 'alerts@e-ness.com.br'
@@ -189,7 +189,7 @@ export async function sendReportEmail(
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N.Crisis Report</title>
+    <title>n.crisis Report</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; }
         .container { max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -244,7 +244,7 @@ export async function sendReportEmail(
         </div>
         
         <div class="footer">
-            <p>N.Crisis - Sistema de Detecção de PII</p>
+            <p>n.crisis - Sistema de Detecção de PII</p>
             <p>Domain: monster.e-ness.com.br</p>
         </div>
     </div>
@@ -253,7 +253,7 @@ export async function sendReportEmail(
 
   return await sendEmail({
     to,
-    subject: `N.Crisis - Relatório ${data.reportType} Disponível`,
+    subject: `n.crisis - Relatório ${data.reportType} Disponível`,
     html,
     from: 'reports@e-ness.com.br'
   });
@@ -273,7 +273,7 @@ export async function sendWelcomeEmail(
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bem-vindo ao N.Crisis</title>
+    <title>Bem-vindo ao n.crisis</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; }
         .container { max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -296,7 +296,7 @@ export async function sendWelcomeEmail(
         <div class="content">
             <p>Olá <strong>${userName}</strong>,</p>
             
-            <p>Seja bem-vindo ao <strong>N.Crisis</strong>, a solução completa para detecção e análise de PII (Informações Pessoais Identificáveis) com conformidade LGPD.</p>
+            <p>Seja bem-vindo ao <strong>n.crisis</strong>, a solução completa para detecção e análise de PII (Informações Pessoais Identificáveis) com conformidade LGPD.</p>
             
             <div class="feature">
                 <h3>🔍 Detecção Avançada</h3>
@@ -319,7 +319,7 @@ export async function sendWelcomeEmail(
         </div>
         
         <div class="footer">
-            <p>N.Crisis - Sistema de Detecção de PII</p>
+            <p>n.crisis - Sistema de Detecção de PII</p>
             <p>Domain: monster.e-ness.com.br</p>
             <p>Este email foi enviado para ${to}</p>
         </div>
@@ -329,7 +329,7 @@ export async function sendWelcomeEmail(
 
   return await sendEmail({
     to,
-    subject: 'Bem-vindo ao N.Crisis - Sistema de Detecção de PII',
+    subject: 'Bem-vindo ao n.crisis - Sistema de Detecção de PII',
     html,
     from: 'welcome@e-ness.com.br'
   });

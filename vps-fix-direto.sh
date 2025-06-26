@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Script de Correção Direta para VPS N.Crisis
+# Script de Correção Direta para VPS n.crisis
 # Execute este comando na VPS: curl -s https://raw.githubusercontent.com/resper1965/PrivacyShield/main/vps-fix-direto.sh | bash
 
-echo "🔧 Corrigindo N.Crisis na VPS monster.e-ness.com.br"
+echo "🔧 Corrigindo n.crisis na VPS monster.e-ness.com.br"
 echo "=================================================="
 
 # Verifica se é root
@@ -19,7 +19,7 @@ pkill -f "node.*ncrisis" 2>/dev/null || echo "Nenhum processo Node.js encontrado
 # Cria serviço systemd correto
 cat > /etc/systemd/system/ncrisis.service << 'EOF'
 [Unit]
-Description=N.Crisis PII Detection Platform
+Description=n.crisis PII Detection Platform
 After=network.target postgresql.service redis-server.service
 Wants=postgresql.service redis-server.service
 
@@ -126,7 +126,7 @@ echo "📊 Status dos Serviços:"
 systemctl is-active postgresql && echo "✅ PostgreSQL: Ativo" || echo "❌ PostgreSQL: Inativo"
 systemctl is-active redis-server && echo "✅ Redis: Ativo" || echo "❌ Redis: Inativo"
 systemctl is-active nginx && echo "✅ Nginx: Ativo" || echo "❌ Nginx: Inativo"
-systemctl is-active ncrisis && echo "✅ N.Crisis: Ativo" || echo "❌ N.Crisis: Inativo"
+systemctl is-active ncrisis && echo "✅ n.crisis: Ativo" || echo "❌ n.crisis: Inativo"
 
 echo ""
 echo "🧪 Testando aplicação..."

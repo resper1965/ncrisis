@@ -21,4 +21,13 @@ cd frontend && npm install && npm run build && cd ..
 echo "Reiniciando containers Docker..."
 docker compose down && docker compose up -d
 
-echo "Sistema sincronizado e ativo!" 
+echo "Sistema sincronizado e ativo!"
+
+echo "\n--- Commit mais recente no repositório ---"
+git log -1
+
+echo "\n--- Containers Docker ativos ---"
+docker ps
+
+echo "\n--- Últimos logs do backend (20 linhas) ---"
+docker compose logs --tail=20 backend || echo "Serviço 'backend' não encontrado no docker-compose." 

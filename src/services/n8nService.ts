@@ -32,7 +32,7 @@ export async function triggerN8nIncident(fileId: string): Promise<N8nWebhookResp
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
-        'User-Agent': 'N.Crisis-PII-Detector/1.0'
+        'User-Agent': 'n.crisis-PII-Detector/1.0'
       },
       body: JSON.stringify({ fileId }),
       // Add timeout to prevent hanging
@@ -84,7 +84,7 @@ export async function testN8nConnection(): Promise<N8nWebhookResponse> {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
-        'User-Agent': 'N.Crisis-PII-Detector/1.0'
+        'User-Agent': 'n.crisis-PII-Detector/1.0'
       },
       body: JSON.stringify({ 
         fileId: 'test-connection',
