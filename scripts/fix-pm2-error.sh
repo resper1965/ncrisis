@@ -59,8 +59,8 @@ fi
 
 # 4. Verificar se o arquivo existe
 log "Verificando arquivo da aplicação..."
-if [ ! -f "dist/server.js" ]; then
-    error "Arquivo dist/server.js não encontrado"
+if [ ! -f "build/src/server-clean.js" ]; then
+    error "Arquivo build/src/server-clean.js não encontrado"
     log "Fazendo build da aplicação..."
     npm run build
 fi
@@ -86,14 +86,14 @@ log "Fazendo build da aplicação..."
 npm run build
 
 # 8. Verificar se o build foi bem-sucedido
-if [ ! -f "dist/server.js" ]; then
-    error "Build falhou - arquivo dist/server.js não foi criado"
+if [ ! -f "build/src/server-clean.js" ]; then
+    error "Build falhou - arquivo build/src/server-clean.js não foi criado"
     exit 1
 fi
 
 # 9. Iniciar aplicação
 log "Iniciando aplicação PM2..."
-pm2 start dist/server.js --name ncrisis-backend
+pm2 start build/src/server-clean.js --name ncrisis-backend
 
 # 10. Verificar status
 log "Verificando status da aplicação..."
