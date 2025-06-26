@@ -44,11 +44,20 @@ log "Iniciando diagnóstico e correção do PM2"
 # 1. Navegar para o diretório do projeto
 cd $PROJECT_DIR
 
-# 2. Verificar logs do PM2
-log "Verificando logs do PM2..."
-pm2 logs ncrisis-backend --lines 20
+# 2. Parar aplicação se estiver rodando (antes de verificar logs)
+log "Parando aplicação PM2..."
+pm2 stop ncrisis-backend 2>/dev/null || true
+pm2 delete ncrisis-backend 2>/dev/null || true
 
-# 3. Verificar se o arquivo existe
+# 3. Verificar logs do PM2 (após parar)
+log "Verificando logs do PM2..."
+if [ -f "/root/.pm2/logs/ncrisis-backend-error.log" ]; then
+    echo "=== ÚLTIMOS LOGS DE ERRO ==="
+    tail -20 /root/.pm2/logs/ncrisis-backend-error.log
+    echo ""
+fi
+
+# 4. Verificar se o arquivo existe
 log "Verificando arquivo da aplicação..."
 if [ ! -f "dist/server.js" ]; then
     error "Arquivo dist/server.js não encontrado"
@@ -56,7 +65,7 @@ if [ ! -f "dist/server.js" ]; then
     npm run build
 fi
 
-# 4. Verificar variáveis de ambiente
+# 5. Verificar variáveis de ambiente
 log "Verificando arquivo .env..."
 if [ ! -f ".env" ]; then
     error "Arquivo .env não encontrado"
@@ -64,11 +73,6 @@ if [ ! -f ".env" ]; then
     cp env.example .env
     warn "Configure as variáveis de ambiente no arquivo .env"
 fi
-
-# 5. Parar aplicação se estiver rodando
-log "Parando aplicação PM2..."
-pm2 stop ncrisis-backend 2>/dev/null || true
-pm2 delete ncrisis-backend 2>/dev/null || true
 
 # 6. Verificar dependências
 log "Verificando dependências..."
