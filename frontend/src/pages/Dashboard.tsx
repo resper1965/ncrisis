@@ -38,57 +38,43 @@ export const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        // Fetch queue status
+        // Buscar status da fila
         const queueResponse = await fetch('/api/queue/status');
         const queueData = await queueResponse.json();
-        
-        // Fetch detections summary (simulated)
-        // In real implementation, this would come from actual API
+
+        // Buscar estatísticas reais do backend
+        const statsResponse = await fetch('/api/v1/statistics');
+        const statsData = await statsResponse.json();
+
         setStats({
-          totalUploads: 156,
+          totalUploads: statsData.totalFiles || 0,
           pendingJobs: queueData.queues?.archive?.waiting || 0,
-          piiFound: 2847,
-          falsePendingReview: 23
+          piiFound: statsData.totalDetections || 0,
+          falsePendingReview: statsData.falsePendingReview || 0
         });
 
-        // Simulated chart data - in real implementation, fetch from API
-        setUploadChartData([
-          { date: '2025-06-17', uploads: 12 },
-          { date: '2025-06-18', uploads: 8 },
-          { date: '2025-06-19', uploads: 15 },
-          { date: '2025-06-20', uploads: 22 },
-          { date: '2025-06-21', uploads: 18 },
-          { date: '2025-06-22', uploads: 25 },
-          { date: '2025-06-23', uploads: 14 },
-          { date: '2025-06-24', uploads: 9 }
-        ]);
+        // Buscar dados do gráfico de uploads (exemplo)
+        setUploadChartData(statsData.uploadsByDay || []);
 
-        // Simulated alerts
-        setAlerts([
-          {
-            id: '1',
-            type: 'warning',
-            message: 'ClamAV: Última atualização há 3 dias',
-            timestamp: '2025-06-24T01:00:00Z'
-          },
-          {
-            id: '2',
-            type: 'info',
-            message: 'OpenAI: 78% da cota mensal utilizada',
-            timestamp: '2025-06-24T00:30:00Z'
-          }
-        ]);
+        // Buscar alertas reais, se existir endpoint
+        setAlerts(statsData.alerts || []);
 
         setLoading(false);
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
+        setStats({
+          totalUploads: 0,
+          pendingJobs: 0,
+          piiFound: 0,
+          falsePendingReview: 0
+        });
+        setUploadChartData([]);
+        setAlerts([]);
         setLoading(false);
       }
     };
 
     fetchDashboardData();
-    
-    // Refresh every 30 seconds
     const interval = setInterval(fetchDashboardData, 30000);
     return () => clearInterval(interval);
   }, []);
