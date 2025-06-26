@@ -203,20 +203,26 @@ export class PIIRepository {
       orderBy: [{ titular: 'asc' }, { timestamp: 'desc' }],
     });
 
-    // Group by titular
-    const grouped = detections.reduce((acc, detection) => {
-      if (!acc[detection.titular]) {
-        acc[detection.titular] = [];
-      }
-      acc[detection.titular]!.push(detection);
-      return acc;
-    }, {} as Record<string, DetectionRecord[]>);
+    // Group by titular with explicit accumulator type
+    const grouped = detections.reduce<Record<string, DetectionRecord[]>>(
+      (acc, detection) => {
+        if (!acc[detection.titular]) {
+          acc[detection.titular] = [];
+        }
+        acc[detection.titular]!.push(detection);
+        return acc;
+      },
+      {}
+    );
 
-    return Object.entries(grouped).map(([titular, detections]) => ({
-      titular,
-      detections,
-      totalDetections: detections.length,
-    }));
+    // Map grouped entries with explicit tuple typing
+    return (Object.entries(grouped) as [string, DetectionRecord[]][]).map(
+      ([titular, detectionArr]) => ({
+        titular,
+        detections: detectionArr,
+        totalDetections: detectionArr.length,
+      })
+    );
   }
 
   /**
